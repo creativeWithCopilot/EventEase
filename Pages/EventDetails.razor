@@ -1,0 +1,33 @@
+@page "/events/{id:int}"
+@using EventEase.Models
+@using Microsoft.AspNetCore.Components.Routing
+
+@if (Event is not null)
+{
+    <h2>@Event.Name</h2>
+    <p><strong>Date:</strong> @Event.Date.ToString("MMMM dd, yyyy")</p>
+    <p><strong>Location:</strong> @Event.Location</p>
+
+    <NavLink class="btn btn-success" href="@($"/events/{Event.Id}/register")">Register</NavLink>
+
+}
+else
+{
+    <p>Event not found.</p>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private EventModel? Event;
+
+    protected override void OnInitialized()
+    {
+        Event = new EventModel
+        {
+            Id = Id,
+            Name = $"Sample Event {Id}",
+            Date = DateTime.Now.AddDays(7),
+            Location = "Yangon"
+        };
+    }
+}

@@ -1,0 +1,21 @@
+@page "/events"
+@using EventEase.Models
+@using EventEase.Components
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+<h2>Upcoming Events</h2>
+
+<Virtualize Items="Events" Context="ev" ItemSize="60">
+    <EventCard @key="ev.Id" Event="ev" />
+</Virtualize>
+
+@code {
+    private List<EventModel> Events = Enumerable.Range(1, 100)
+        .Select(i => new EventModel
+        {
+            Id = i,
+            Name = $"Event {i}",
+            Date = DateTime.Now.AddDays(i),
+            Location = "Yangon"
+        }).ToList();
+}

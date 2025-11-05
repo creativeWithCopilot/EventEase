@@ -1,0 +1,43 @@
+@page "/events/{id:int}/attendance"
+@using EventEase.Models
+@inject EventEase.Services.AttendanceService Attendance
+
+<h2>Attendance for Event @Id</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Check-In</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var record in Attendance.GetEventAttendance(Id))
+        {
+            <tr>
+                <td>@record.AttendeeName</td>
+                <td>@record.Email</td>
+                <td>@(record.IsPresent ? "Present" : "Absent")</td>
+                <td>@(record.CheckInTime?.ToString("g") ?? "-")</td>
+                <td>
+                    @if (!record.IsPresent)
+                    {
+                        <button class="btn btn-success" @onclick="() => CheckIn(record.Email)">Mark Present</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private void CheckIn(string email)
+    {
+        Attendance.MarkPresent(Id, email);
+    }
+}

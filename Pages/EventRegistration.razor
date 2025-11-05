@@ -1,0 +1,65 @@
+@page "/events/{id:int}/register"
+@using EventEase.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject EventEase.Services.SessionState Session
+@inject EventEase.Services.AttendanceService Attendance
+
+<h2>Register for Event</h2>
+
+@if (Event is not null)
+{
+    @if (!Session.IsRegistered)
+    {
+        <EditForm Model="@registration" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label>Name:</label>
+                <InputText @bind-Value="registration.AttendeeName" class="form-control" />
+                <ValidationMessage For="@(() => registration.AttendeeName)" />
+            </div>
+
+            <div class="form-group">
+                <label>Email:</label>
+                <InputText @bind-Value="registration.Email" class="form-control" />
+                <ValidationMessage For="@(() => registration.Email)" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </EditForm>
+    }
+    else
+    {
+        <div class="alert alert-success">
+            Welcome back, @Session.UserName! You are already registered with <strong>@Session.Email</strong>.
+        </div>
+    }
+}
+else
+{
+    <p>Event not found.</p>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private EventModel? Event;
+    private RegistrationModel registration = new();
+
+    protected override void OnInitialized()
+    {
+        Event = new EventModel
+        {
+            Id = Id,
+            Name = $"Sample Event {Id}",
+            Date = DateTime.Now.AddDays(7),
+            Location = "Yangon"
+        };
+    }
+
+    private void HandleValidSubmit()
+    {
+        Session.Register(registration.AttendeeName, registration.Email);
+        Attendance.RegisterAttendance(Id, registration.AttendeeName, registration.Email);
+    }
+}
